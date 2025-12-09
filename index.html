@@ -28,6 +28,7 @@
         list.innerHTML = "";
         rows.forEach(row => {
           const parts = row.split(';');
+          console.log(parts);
 
           // ✅ Sécurité : ignore les lignes vides et enlève les guillemets parasites
           if(parts.length >= 3 && parts[0].trim() !== "") {
@@ -58,3 +59,4 @@
   </script>
 </body>
 </html>
+
