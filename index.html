@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Livre de citations</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    input { margin-bottom: 20px; padding: 5px; width: 300px; }
+    li { margin: 15px 0; }
+    .signification { color: gray; font-style: italic; margin-left: 20px; }
+  </style>
+</head>
+<body>
+  <h1>📖 Mon livre de citations</h1>
+  <input type="text" id="search" placeholder="Cherche un mot-clé...">
+  <ul id="citations"></ul>
+
+  <script>
+    async function loadCSV() {
+      const response = await fetch('citationsexplications.csv'); // ton fichier CSV
+      const text = await response.text();
+      const rows = text.split('\n').slice(1); // ignore la première ligne (entête)
+
+      const list = document.getElementById('citations');
+      const searchInput = document.getElementById('search');
+
+      function display(filter="") {
+        list.innerHTML = "";
+        rows.forEach(row => {
+          const parts = row.split(';');
+
+          // ✅ Sécurité : ignore les lignes vides et enlève les guillemets parasites
+          if(parts.length >= 3 && parts[0].trim() !== "") {
+            const citation = parts[0].replace(/^"+|"+$/g, '').trim();   // colonne 1 = citation
+            const motscles = parts[1].toLowerCase();                   // colonne 2 = mots-clés
+            const signification = parts[2].trim();                      // colonne 3 = explication
+
+            // Filtrage par mot-clé
+            if(filter==="" || motscles.includes(filter.toLowerCase())){
+              const li = document.createElement('li');
+              li.innerHTML = `<strong>"${citation}"</strong><br><span class="signification">${signification}</span>`;
+              list.appendChild(li);
+            }
+          }
+        });
+      }
+
+      // affichage initial
+      display();
+
+      // recherche dynamique
+      searchInput.addEventListener('input', e => {
+        display(e.target.value);
+      });
+    }
+
+    loadCSV();
+  </script>
+</body>
+</html>
